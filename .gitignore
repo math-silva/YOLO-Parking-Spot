@@ -38,3 +38,9 @@ __pycache__/
 /test_results/
 
 /data/**/classes.txt
+/data/imgs/
+
+# todo
+todo.md
+# models
+models/

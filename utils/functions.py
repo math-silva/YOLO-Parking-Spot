@@ -4,6 +4,7 @@
 # pyright: reportUnknownMemberType=none, reportUnknownVariableType=none
 
 import numpy as np
+import pandas as pd
 import cv2
 import os
 
@@ -51,8 +52,13 @@ def draw_bounding_boxes(image_path, annotation_path, output_path, threshold, hig
     
     # Create a dictionary to store the class counts
     class_counts = {}
-    disabled_spot_occupied = 0
-    spot_occupied = 0
+
+    # Initialize the counts
+    occupied_disabled_spot = 0
+    empty_disabled_spot = 0
+    occupied_spot = 0
+    empty_spot = 0
+    cars_in_transit = 0
     
     # Process each annotation and store rectangle information in a list
     rectangles = []
@@ -80,14 +86,14 @@ def draw_bounding_boxes(image_path, annotation_path, output_path, threshold, hig
         elif class_id == 15: # Disabled parking spot
             # Check if there is a car occupying of the parking spot
             if is_occupied(image, annotations, left, top, right, bottom, threshold):
-                disabled_spot_occupied += 1
+                occupied_disabled_spot += 1
                 color = (0, 0, 255)  # Red color
             else:
                 color = (255, 0, 0)  # Blue color
         elif class_id == 16: # Parking spot
             # Check if there is a car occupying the parking spot
             if is_occupied(image, annotations, left, top, right, bottom, threshold):
-                spot_occupied += 1
+                occupied_spot += 1
                 color = (0, 0, 255)  # Red color
             else:
                 color = (0, 255, 0)  # Green color
@@ -103,6 +109,13 @@ def draw_bounding_boxes(image_path, annotation_path, output_path, threshold, hig
         left, top, right, bottom, color = rectangle
         cv2.rectangle(image, (left, top), (right, bottom), color, 2)
 
+    # Empty parking spots count
+    empty_disabled_spot = class_counts.get(15, 0) - occupied_disabled_spot
+    empty_spot = class_counts.get(16, 0) - occupied_spot
+
+    # Calculate the total number of cars in transit or parked in non-parking spots
+    cars_in_transit = class_counts.get(4, 0) - occupied_disabled_spot - occupied_spot
+
     alpha = 0.4  # Transparency factor.
     
     # Image legend
@@ -111,11 +124,11 @@ def draw_bounding_boxes(image_path, annotation_path, output_path, threshold, hig
     cv2.rectangle(overlay, (text_position[0] - 10, text_position[1] - 30), (text_position[0] + 390, text_position[1] + 80), (0, 0, 0), cv2.FILLED)
     image = cv2.addWeighted(overlay, alpha, image, 1 - alpha, 0) # Add the overlay to the image
     
-    text = f'Disabled parking spots Count: {class_counts.get(15, 0)}'
+    text = f'Disabled parking spots count: {class_counts.get(15, 0)}'
     cv2.putText(image, text, text_position, cv2.FONT_HERSHEY_SIMPLEX, 0.7, (255,255,255), 2)
     text_position = (text_position[0], text_position[1] + 30)  # Increment the y-coordinate
     
-    text = f'Parking spots Count: {class_counts.get(16, 0)}'
+    text = f'Parking spots count: {class_counts.get(16, 0)}'
     cv2.putText(image, text, text_position, cv2.FONT_HERSHEY_SIMPLEX, 0.7, (255,255,255), 2)
     text_position = (text_position[0], text_position[1] + 30)  # Increment the y-coordinate
 
@@ -127,47 +140,83 @@ def draw_bounding_boxes(image_path, annotation_path, output_path, threshold, hig
     cv2.rectangle(overlay, (text_position[0] - 10, text_position[1] - 30), (text_position[0] + 575, text_position[1] + 140), (0, 0, 0, 0.8), cv2.FILLED)
     image = cv2.addWeighted(overlay, alpha, image, 1 - alpha, 0) # Add the overlay to the image
 
-    text = f'Empty disabled parking spots Count: {class_counts.get(15, 0) - disabled_spot_occupied}'
+    text = f'Empty disabled parking spots count: {empty_disabled_spot}'
     cv2.putText(image, text, text_position, cv2.FONT_HERSHEY_SIMPLEX, 0.7, (255,255,255), 2)
     text_position = (text_position[0], text_position[1] + 30)  # Increment the y-coordinate
 
-    text = f'Occupied disabled parking spots Count: {disabled_spot_occupied}'
+    text = f'Occupied disabled parking spots count: {occupied_disabled_spot}'
     cv2.putText(image, text, text_position, cv2.FONT_HERSHEY_SIMPLEX, 0.7, (255,255,255), 2)
     text_position = (text_position[0], text_position[1] + 30)  # Increment the y-coordinate
 
-    text = f'Empty parking spots Count: {class_counts.get(16, 0) - spot_occupied}'
+    text = f'Empty parking spots count: {empty_spot}'
     cv2.putText(image, text, text_position, cv2.FONT_HERSHEY_SIMPLEX, 0.7, (255,255,255), 2)
     text_position = (text_position[0], text_position[1] + 30)  # Increment the y-coordinate
 
-    text = f'Occupied parking spots count: {spot_occupied}'
+    text = f'Occupied parking spots count: {occupied_spot}'
     cv2.putText(image, text, text_position, cv2.FONT_HERSHEY_SIMPLEX, 0.7, (255,255,255), 2)
     text_position = (text_position[0], text_position[1] + 30)  # Increment the y-coordinate
 
-    text = f'Cars in transit or parked in non-parking spots: {class_counts.get(4, 0) - disabled_spot_occupied - spot_occupied}'
+    text = f'Cars in transit or parked in non-parking spots: {cars_in_transit}'
     cv2.putText(image, text, text_position, cv2.FONT_HERSHEY_SIMPLEX, 0.7, (255,255,255), 2)
     
     # Save the image with bounding boxes
     output_image_path = os.path.join(output_path, os.path.basename(image_path))
     cv2.imwrite(output_image_path, image)
 
+    # Create a DataFrame to store the results
+    results = pd.DataFrame({
+        'Image File': [os.path.basename(image_path)],
+        'Disabled parking spots count': [class_counts.get(15, 0)],
+        'Parking spots count': [class_counts.get(16, 0)],
+        'Cars count': [class_counts.get(4, 0)],
+        'Empty disabled parking spots count': [empty_disabled_spot],
+        'Occupied disabled parking spots count': [occupied_disabled_spot],
+        'Empty parking spots count': [empty_spot],
+        'Occupied parking spots count': [occupied_spot],
+        'Cars in transit or parked in non-parking spots': [cars_in_transit]
+    })
+        
+    return results
 
 # Function to process all images in a folder
-def process_images(folder_path, output_folder, threshold=0.4, highlighted_cars=True):
+def process_images(data_path, output_folder, threshold=0.4, highlighted_cars=True):
     processed_images = 0
+    images_folder = os.path.join(data_path, 'images/')
+    labels_folder = os.path.join(data_path, 'labels/')
     # Create the output folder if it doesn't exist
     if not os.path.exists(output_folder):
         os.makedirs(output_folder)
 
+    output_images_folder = os.path.join(output_folder, 'images/')
+    # Create the output images folder if it doesn't exist
+    if not os.path.exists(os.path.join(output_folder, 'images/')):
+        os.makedirs(os.path.join(output_folder, 'images/'))
+
+    # Save the results in a dataframe
+    columns = ['Image File', 'Disabled parking spots count', 'Parking spots count', 'Cars count',
+            'Empty disabled parking spots count', 'Occupied disabled parking spots count',
+            'Empty parking spots count', 'Occupied parking spots count',
+            'Cars in transit or parked in non-parking spots']
+
+    # Create an empty dataframe
+    results_df = pd.DataFrame(columns=columns)
+
     # Process each image and annotation in the folder
-    for image_file in os.listdir(folder_path):
-        if image_file.endswith('.jpg'):  # Assuming image files have the .jpg extension
-            # Get the paths for the current image and its corresponding annotation file
-            image_path = os.path.join(folder_path, image_file)
-            annotation_file = os.path.splitext(image_file)[0] + '.txt'
-            annotation_path = os.path.join(folder_path, annotation_file)
-            
-            # Call the function to draw bounding boxes and save the resulting image
-            draw_bounding_boxes(image_path, annotation_path, output_folder, threshold, highlighted_cars)
-            processed_images += 1
+    print('Processing images...')
+    for image_file in os.listdir(images_folder):
+        image_path = os.path.join(images_folder, image_file)
+        
+        # Get the annotation file path in the ../labels/ folder
+        annotation_file = os.path.splitext(image_file)[0] + '.txt'
+        annotation_path = os.path.join(labels_folder, annotation_file)
+        
+        # Call the function to draw bounding boxes and save the resulting image
+        results = draw_bounding_boxes(image_path, annotation_path, output_images_folder, threshold, highlighted_cars)
+        processed_images += 1
+
+        # Append the results to the dataframe, remember that the results is a Series object
+        results_df = pd.concat([results_df, results], ignore_index=True)
 
     print(f'Processed {processed_images} images')
+    results_df.to_csv(output_folder + 'output.csv', index=False)  # Set index=False to exclude row numbers
+    return results_df
