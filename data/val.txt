@@ -1,0 +1,5 @@
+./images/empty_set2_70m_1.jpg
+./images/empty_set2_70m_2.jpg
+./images/empty_set1_60m_1.jpg
+./images/empty_set1_70m_2.jpg
+./images/occupied_set2_50m_1.jpg

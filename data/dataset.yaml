@@ -1,0 +1,5 @@
+names:
+  4: car
+path: /data/images
+train: train.txt
+val: val.txt
