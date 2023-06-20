@@ -37,9 +37,6 @@ __pycache__/
 # Test results directory
 /test_results/
 
-/data/**/classes.txt
-/data/imgs/
-
 # todo
 todo.md
 # models
