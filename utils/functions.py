@@ -107,7 +107,7 @@ def draw_bounding_boxes(image_path, annotation_path, output_path, threshold, hig
     # Draw the bounding box rectangles on the image
     for rectangle in rectangles:
         left, top, right, bottom, color = rectangle
-        cv2.rectangle(image, (left, top), (right, bottom), color, 2)
+        cv2.rectangle(image, (left, top), (right, bottom), color, 2) # type: ignore
 
     # Empty parking spots count
     empty_disabled_spot = class_counts.get(15, 0) - occupied_disabled_spot
@@ -121,7 +121,7 @@ def draw_bounding_boxes(image_path, annotation_path, output_path, threshold, hig
     # Image legend
     text_position = (image.shape[1] - 400, 30)  # Top-right corner position
     overlay = image.copy()
-    cv2.rectangle(overlay, (text_position[0] - 10, text_position[1] - 30), (text_position[0] + 390, text_position[1] + 80), (0, 0, 0), cv2.FILLED)
+    cv2.rectangle(overlay, (text_position[0] - 10, text_position[1] - 30), (text_position[0] + 390, text_position[1] + 80), (0, 0, 0), cv2.FILLED) # type: ignore
     image = cv2.addWeighted(overlay, alpha, image, 1 - alpha, 0) # Add the overlay to the image
     
     text = f'Disabled parking spots count: {class_counts.get(15, 0)}'
@@ -137,7 +137,7 @@ def draw_bounding_boxes(image_path, annotation_path, output_path, threshold, hig
     
     text_position = (30, 30)  # Top-left corner position
     overlay = image.copy()
-    cv2.rectangle(overlay, (text_position[0] - 10, text_position[1] - 30), (text_position[0] + 575, text_position[1] + 140), (0, 0, 0, 0.8), cv2.FILLED)
+    cv2.rectangle(overlay, (text_position[0] - 10, text_position[1] - 30), (text_position[0] + 575, text_position[1] + 140), (0, 0, 0, 0.8), cv2.FILLED) # type: ignore
     image = cv2.addWeighted(overlay, alpha, image, 1 - alpha, 0) # Add the overlay to the image
 
     text = f'Empty disabled parking spots count: {empty_disabled_spot}'
