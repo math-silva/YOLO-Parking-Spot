@@ -11,6 +11,8 @@ decorator==5.1.1
 executing==1.2.0
 filelock==3.12.2
 fonttools==4.40.0
+gitdb==4.0.10
+GitPython==3.1.31
 idna==3.4
 ipykernel==6.23.2
 ipython==8.14.0
@@ -49,11 +51,13 @@ requests==2.31.0
 scipy==1.10.1
 seaborn==0.12.2
 six==1.16.0
+smmap==5.0.0
 stack-data==0.6.2
 sympy==1.12
+thop==0.1.1.post2209072238
 tomli==2.0.1
 torch==2.0.1
-#torch==2.0.1+cu113
+#+cu118
 torchaudio==2.0.2
 torchvision==0.15.2
 tornado==6.3.2

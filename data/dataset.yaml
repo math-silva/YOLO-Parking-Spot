@@ -1,5 +1,5 @@
 names:
-  4: car
-path: /data/images
+  0: car
+path: data/custom-data/
 train: train.txt
 val: val.txt

@@ -14,7 +14,7 @@ def is_occupied(image, annotations, left, top, right, bottom, threshold):
     car_boxes = []
     for annotation in annotations:
         class_id, x_center, y_center, width, height = map(float, annotation.split())
-        if class_id == 4:
+        if class_id == 0:
             car_left = int((x_center - width / 2) * image.shape[1])
             car_top = int((y_center - height / 2) * image.shape[0])
             car_right = int((x_center + width / 2) * image.shape[1])
@@ -78,19 +78,19 @@ def draw_bounding_boxes(image_path, annotation_path, output_path, threshold, hig
 
         color = (0, 0, 0)
         # Set the color based on the class ID
-        if class_id == 4: # Car
+        if class_id == 0: # Car
             if highlighted_cars:
                 color = (0, 165, 255)  # Orange color
             else:
                 continue
-        elif class_id == 15: # Disabled parking spot
+        elif class_id == 1: # Disabled parking spot
             # Check if there is a car occupying of the parking spot
             if is_occupied(image, annotations, left, top, right, bottom, threshold):
                 occupied_disabled_spot += 1
                 color = (0, 0, 255)  # Red color
             else:
                 color = (255, 0, 0)  # Blue color
-        elif class_id == 16: # Parking spot
+        elif class_id == 2: # Parking spot
             # Check if there is a car occupying the parking spot
             if is_occupied(image, annotations, left, top, right, bottom, threshold):
                 occupied_spot += 1
@@ -110,11 +110,11 @@ def draw_bounding_boxes(image_path, annotation_path, output_path, threshold, hig
         cv2.rectangle(image, (left, top), (right, bottom), color, 2) # type: ignore
 
     # Empty parking spots count
-    empty_disabled_spot = class_counts.get(15, 0) - occupied_disabled_spot
-    empty_spot = class_counts.get(16, 0) - occupied_spot
+    empty_disabled_spot = class_counts.get(1, 0) - occupied_disabled_spot
+    empty_spot = class_counts.get(2, 0) - occupied_spot
 
     # Calculate the total number of cars in transit or parked in non-parking spots
-    cars_in_transit = class_counts.get(4, 0) - occupied_disabled_spot - occupied_spot
+    cars_in_transit = class_counts.get(0, 0) - occupied_disabled_spot - occupied_spot
 
     alpha = 0.4  # Transparency factor.
     
@@ -124,15 +124,15 @@ def draw_bounding_boxes(image_path, annotation_path, output_path, threshold, hig
     cv2.rectangle(overlay, (text_position[0] - 10, text_position[1] - 30), (text_position[0] + 390, text_position[1] + 80), (0, 0, 0), cv2.FILLED) # type: ignore
     image = cv2.addWeighted(overlay, alpha, image, 1 - alpha, 0) # Add the overlay to the image
     
-    text = f'Disabled parking spots count: {class_counts.get(15, 0)}'
+    text = f'Disabled parking spots count: {class_counts.get(1, 0)}'
     cv2.putText(image, text, text_position, cv2.FONT_HERSHEY_SIMPLEX, 0.7, (255,255,255), 2)
     text_position = (text_position[0], text_position[1] + 30)  # Increment the y-coordinate
     
-    text = f'Parking spots count: {class_counts.get(16, 0)}'
+    text = f'Parking spots count: {class_counts.get(2, 0)}'
     cv2.putText(image, text, text_position, cv2.FONT_HERSHEY_SIMPLEX, 0.7, (255,255,255), 2)
     text_position = (text_position[0], text_position[1] + 30)  # Increment the y-coordinate
 
-    text = f'Cars count: {class_counts.get(4, 0)}'
+    text = f'Cars count: {class_counts.get(0, 0)}'
     cv2.putText(image, text, text_position, cv2.FONT_HERSHEY_SIMPLEX, 0.7, (255,255,255), 2)
     
     text_position = (30, 30)  # Top-left corner position
@@ -166,9 +166,9 @@ def draw_bounding_boxes(image_path, annotation_path, output_path, threshold, hig
     # Create a DataFrame to store the results
     results = pd.DataFrame({
         'Image File': [os.path.basename(image_path)],
-        'Disabled parking spots count': [class_counts.get(15, 0)],
-        'Parking spots count': [class_counts.get(16, 0)],
-        'Cars count': [class_counts.get(4, 0)],
+        'Disabled parking spots count': [class_counts.get(1, 0)],
+        'Parking spots count': [class_counts.get(2, 0)],
+        'Cars count': [class_counts.get(0, 0)],
         'Empty disabled parking spots count': [empty_disabled_spot],
         'Occupied disabled parking spots count': [occupied_disabled_spot],
         'Empty parking spots count': [empty_spot],
@@ -217,6 +217,6 @@ def process_images(data_path, output_folder, threshold=0.4, highlighted_cars=Tru
         # Append the results to the dataframe, remember that the results is a Series object
         results_df = pd.concat([results_df, results], ignore_index=True)
 
-    print(f'Processed {processed_images} images')
+    print(f'Processed {processed_images} images ✅')
     results_df.to_csv(output_folder + 'output.csv', index=False)  # Set index=False to exclude row numbers
     return results_df
