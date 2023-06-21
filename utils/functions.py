@@ -12,6 +12,27 @@ import shutil
 # ROOT DIRECTORY
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
+YOLOV5_VERSIONS = [
+    "yolov5n.pt",
+    "yolov5s.pt",
+    "yolov5m.pt",
+    "yolov5l.pt",
+    "yolov5x.pt",
+    "yolov5n6.pt",
+    "yolov5s6.pt",
+    "yolov5m6.pt",
+    "yolov5l6.pt",
+    "yolov5x6.pt"
+]
+
+YOLOV8_VERSIONS = [
+    "yolov8n.pt",
+    "yolov8s.pt",
+    "yolov8m.pt",
+    "yolov8l.pt",
+    "yolov8x.pt",
+]
+
 # Function to check if a car is occupying a parking spot
 def is_occupied(image, annotations, left, top, right, bottom, threshold):
     # Get the car bounding boxes
@@ -279,3 +300,28 @@ def process_images(data_path: str, output_folder: str, threshold: float = 0.4, h
     print(f'Processed {processed_images} images ✅')
     results_df.to_csv(output_folder + 'output.csv', index=False)  # Set index=False to exclude row numbers
     return results_df
+
+
+# Function to check if model is a custom model or a pre-trained model
+def is_custom_model(model: str, yoloversion: str):
+    if not model.endswith(".pt"): # If it doesn't end with .pt, add it
+        model = model + ".pt"
+
+    versions = YOLOV8_VERSIONS if yoloversion == "8" else YOLOV5_VERSIONS
+
+    # Check if it's a custom model
+    if not model in versions:
+        # If model is a path
+        if model.__contains__("/") or model.__contains__("\\"):
+            model_path = model 
+            model = model.split("/")[-1]
+            model = model.split("\\")[-1]
+        # If model is a name, add a path
+        else: 
+            model_path = os.path.join(ROOT, f"models/{model}")
+
+    # If it is'nt a custom model, don't add the path
+    else:
+        model_path = model
+
+    return model, model_path

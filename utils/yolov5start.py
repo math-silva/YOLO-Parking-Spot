@@ -34,7 +34,7 @@ def only_car_label(labels_path):
 
 def parse_opt():
     parser = argparse.ArgumentParser()
-    parser.add_argument('--reporoot', type=str, default=ROOT+'/..')
+    parser.add_argument('--reporoot', type=str, default=ROOT, help='path to repo root')
     opt = parser.parse_args()
     return opt
 
