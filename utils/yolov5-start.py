@@ -1,5 +1,9 @@
 import os
 import shutil
+import argparse
+
+# root
+ROOT = os.path.dirname(os.path.abspath(__file__))
 
 
 def copy_data2yolo(repo_path, yolo_path):
@@ -28,13 +32,26 @@ def only_car_label(labels_path):
     print(f"Only car labels left ✅")
 
 
-# get current working directory
-repo_path = os.getcwd()
-yolo_path = os.path.join(repo_path, 'yolov5')
-
-copy_data2yolo(repo_path, yolo_path)
-only_car_label(os.path.join(yolo_path, 'data/custom-data/labels'))
-
+def parse_opt():
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--reporoot', type=str, default=ROOT+'/..')
+    opt = parser.parse_args()
+    return opt
 
 
+def main(opt):
+    # get current working directory
+    repo_path = opt.reporoot
+    # get yolov5 path
+    yolo_path = os.path.join(repo_path, 'yolov5')
 
+    print(f"Repo path: {repo_path}")
+
+    copy_data2yolo(repo_path, yolo_path)
+    only_car_label(os.path.join(yolo_path, 'data/custom-data/labels'))
+
+
+if __name__ == '__main__':
+    opt = parse_opt()
+    main(opt)
+    

@@ -7,6 +7,10 @@ import numpy as np
 import pandas as pd
 import cv2
 import os
+import shutil
+
+# ROOT DIRECTORY
+ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 # Function to check if a car is occupying a parking spot
 def is_occupied(image, annotations, left, top, right, bottom, threshold):
@@ -178,11 +182,66 @@ def draw_bounding_boxes(image_path, annotation_path, output_path, threshold, hig
         
     return results
 
+def process_labels(data_path, new_labels_folder):
+    # Copy data/labels to .temp/labels
+    # Create .temp/labels if it doesn't exist
+    temp_labels_path = os.path.join(ROOT, '.temp/labels/')
+
+    # if exists delete it
+    if os.path.exists(temp_labels_path):
+        shutil.rmtree(temp_labels_path)
+
+    # Copy the labels directory to .temp/labels/
+    src_labels_path = os.path.join(data_path, 'labels/')
+    shutil.copytree(src_labels_path, temp_labels_path)
+
+    # Process each annotation file in the .temp/labels/ folder
+    for annotation_file in os.listdir(temp_labels_path):
+        with open(os.path.join(temp_labels_path, annotation_file), 'r+') as f:
+            lines = f.readlines()
+            # remove all lines that start with 0
+            f.seek(0)
+            for line in lines:
+                if not line.startswith('0'):
+                    f.write(line)
+
+            try:
+                with open(os.path.join(new_labels_folder, annotation_file), 'r') as new_f:
+                    f.write(new_f.read())
+            except FileNotFoundError:
+                pass
+
+            f.truncate()  # Remove extra lines, if any
+
+    return temp_labels_path
+
+
+
 # Function to process all images in a folder
-def process_images(data_path, output_folder, threshold=0.4, highlighted_cars=True):
+def process_images(data_path: str, output_folder: str, threshold: float = 0.4, highlighted_cars: bool = True, model: str = ''):
     processed_images = 0
+
     images_folder = os.path.join(data_path, 'images/')
-    labels_folder = os.path.join(data_path, 'labels/')
+    
+    # Check if the model name is provided
+    if model != '':
+        if model.__contains__('/'): # if model is a path
+            new_labels_folder = model
+        else: # if model is a name
+            new_labels_folder = os.path.join(ROOT, f'results/{model}/labels/')
+
+        try: 
+            print(f'Using labels from {new_labels_folder}')
+            labels_folder = process_labels(data_path, new_labels_folder) # process labels
+        except FileNotFoundError: # if labels not found
+            print(
+                f'No labels found for model {model}!\n' +
+                'Make sure you wrote the correct model name. Otherwise, train the model first.')
+            return pd.DataFrame()
+    
+    else:
+        labels_folder = os.path.join(data_path, 'labels/')
+
     # Create the output folder if it doesn't exist
     if not os.path.exists(output_folder):
         os.makedirs(output_folder)

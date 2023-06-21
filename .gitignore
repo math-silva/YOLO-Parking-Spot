@@ -44,3 +44,6 @@ models/
 
 # yolov5 clone
 yolov5
+
+# temp files
+.temp/
