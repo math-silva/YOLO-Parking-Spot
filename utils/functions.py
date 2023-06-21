@@ -299,6 +299,9 @@ def process_images(data_path: str, output_folder: str, threshold: float = 0.4, h
 
     print(f'Processed {processed_images} images ✅')
     results_df.to_csv(output_folder + 'output.csv', index=False)  # Set index=False to exclude row numbers
+
+    # Delete the .temp folder
+    shutil.rmtree(os.path.join(ROOT, '.temp/'))
     return results_df
 
 

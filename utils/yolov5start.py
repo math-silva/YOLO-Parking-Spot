@@ -3,10 +3,10 @@ import shutil
 import argparse
 
 # root
-ROOT = os.path.dirname(os.path.abspath(__file__))
+ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 
-def copy_data2yolo(repo_path, yolo_path):
+def copy_data2yolov5(repo_path, yolo_path):
     # get data dir path
     data_path = os.path.join(repo_path, 'data')
 
@@ -46,8 +46,9 @@ def main(opt):
     yolo_path = os.path.join(repo_path, 'yolov5')
 
     print(f"Repo path: {repo_path}")
+    print(f"Yolo path: {yolo_path}")
 
-    copy_data2yolo(repo_path, yolo_path)
+    copy_data2yolov5(repo_path, yolo_path)
     only_car_label(os.path.join(yolo_path, 'data/custom-data/labels'))
 
 
