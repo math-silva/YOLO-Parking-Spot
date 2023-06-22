@@ -3,6 +3,7 @@ import shutil
 import argparse
 import yaml
 
+from functions import split_dataset
 from yolov5start import parse_opt, only_car_label
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -26,6 +27,9 @@ def copy_data2yolov8(repo_path, yolo_path):
     # now copy data dir to yolov5/data/custom-data
     shutil.copytree(data_path, os.path.join(yolo_path, 'data/'))
     print(f"Data copied to {os.path.join(yolo_path, 'data/')} ✅")
+
+    # Now, let's split the dataset
+    split_dataset(os.path.join(yolo_path, 'data/'))
 
     # now change yolov8/data/dataset.yaml path to yolov8/dataset.yaml
     shutil.copyfile(os.path.join(yolo_path, 'data/dataset.yaml'), os.path.join(yolo_path, 'dataset.yaml'))

@@ -2,6 +2,8 @@ import os
 import shutil
 import argparse
 
+from functions import split_dataset
+
 # root
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
@@ -10,9 +12,16 @@ def copy_data2yolov5(repo_path, yolo_path):
     # get data dir path
     data_path = os.path.join(repo_path, 'data')
 
+    # if yolov5/data/custom-data exists, delete it
+    if os.path.exists(os.path.join(yolo_path, 'data/custom-data')):
+        shutil.rmtree(os.path.join(yolo_path, 'data/custom-data'))
+
     # now copy data dir to yolov5/data/custom-data
     shutil.copytree(data_path, os.path.join(yolo_path, 'data/custom-data'))
     print(f"Data copied to {os.path.join(yolo_path, 'data/custom-data')} ✅")
+
+    # Now, let's split the dataset
+    split_dataset(os.path.join(yolo_path, 'data/custom-data/'))
 
 
 def only_car_label(labels_path):

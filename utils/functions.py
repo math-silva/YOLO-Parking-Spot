@@ -144,40 +144,40 @@ def draw_bounding_boxes(image_path, annotation_path, output_path, threshold, hig
     alpha = 0.4  # Transparency factor.
     
     # Image legend
-    text_position = (image.shape[1] - 400, 30)  # Top-right corner position
+    text_position = (image.shape[1] - 310, 30)  # Top-right corner position
     overlay = image.copy()
-    cv2.rectangle(overlay, (text_position[0] - 10, text_position[1] - 30), (text_position[0] + 390, text_position[1] + 80), (0, 0, 0), cv2.FILLED) # type: ignore
+    cv2.rectangle(overlay, (text_position[0] - 10, text_position[1] - 30), (text_position[0] + 300, text_position[1] + 80), (0, 0, 0), cv2.FILLED) # type: ignore
     image = cv2.addWeighted(overlay, alpha, image, 1 - alpha, 0) # Add the overlay to the image
     
-    text = f'Disabled parking spots count: {class_counts.get(1, 0)}'
+    text = f'Disabled parking spots: {class_counts.get(1, 0)}'
     cv2.putText(image, text, text_position, cv2.FONT_HERSHEY_SIMPLEX, 0.7, (255,255,255), 2)
     text_position = (text_position[0], text_position[1] + 30)  # Increment the y-coordinate
     
-    text = f'Parking spots count: {class_counts.get(2, 0)}'
+    text = f'Parking spots: {class_counts.get(2, 0)}'
     cv2.putText(image, text, text_position, cv2.FONT_HERSHEY_SIMPLEX, 0.7, (255,255,255), 2)
     text_position = (text_position[0], text_position[1] + 30)  # Increment the y-coordinate
 
-    text = f'Cars count: {class_counts.get(0, 0)}'
+    text = f'Cars: {class_counts.get(0, 0)}'
     cv2.putText(image, text, text_position, cv2.FONT_HERSHEY_SIMPLEX, 0.7, (255,255,255), 2)
     
     text_position = (30, 30)  # Top-left corner position
     overlay = image.copy()
-    cv2.rectangle(overlay, (text_position[0] - 10, text_position[1] - 30), (text_position[0] + 575, text_position[1] + 140), (0, 0, 0, 0.8), cv2.FILLED) # type: ignore
+    cv2.rectangle(overlay, (text_position[0] - 10, text_position[1] - 30), (text_position[0] + 585, text_position[1] + 140), (0, 0, 0, 0.8), cv2.FILLED) # type: ignore
     image = cv2.addWeighted(overlay, alpha, image, 1 - alpha, 0) # Add the overlay to the image
 
-    text = f'Empty disabled parking spots count: {empty_disabled_spot}'
+    text = f'Empty disabled parking spots: {empty_disabled_spot}'
     cv2.putText(image, text, text_position, cv2.FONT_HERSHEY_SIMPLEX, 0.7, (255,255,255), 2)
     text_position = (text_position[0], text_position[1] + 30)  # Increment the y-coordinate
 
-    text = f'Occupied disabled parking spots count: {occupied_disabled_spot}'
+    text = f'Occupied disabled parking spots: {occupied_disabled_spot}'
     cv2.putText(image, text, text_position, cv2.FONT_HERSHEY_SIMPLEX, 0.7, (255,255,255), 2)
     text_position = (text_position[0], text_position[1] + 30)  # Increment the y-coordinate
 
-    text = f'Empty parking spots count: {empty_spot}'
+    text = f'Empty parking spots: {empty_spot}'
     cv2.putText(image, text, text_position, cv2.FONT_HERSHEY_SIMPLEX, 0.7, (255,255,255), 2)
     text_position = (text_position[0], text_position[1] + 30)  # Increment the y-coordinate
 
-    text = f'Occupied parking spots count: {occupied_spot}'
+    text = f'Occupied parking spots: {occupied_spot}'
     cv2.putText(image, text, text_position, cv2.FONT_HERSHEY_SIMPLEX, 0.7, (255,255,255), 2)
     text_position = (text_position[0], text_position[1] + 30)  # Increment the y-coordinate
 
@@ -191,13 +191,13 @@ def draw_bounding_boxes(image_path, annotation_path, output_path, threshold, hig
     # Create a DataFrame to store the results
     results = pd.DataFrame({
         'Image File': [os.path.basename(image_path)],
-        'Disabled parking spots count': [class_counts.get(1, 0)],
-        'Parking spots count': [class_counts.get(2, 0)],
-        'Cars count': [class_counts.get(0, 0)],
-        'Empty disabled parking spots count': [empty_disabled_spot],
-        'Occupied disabled parking spots count': [occupied_disabled_spot],
-        'Empty parking spots count': [empty_spot],
-        'Occupied parking spots count': [occupied_spot],
+        'Disabled parking spots': [class_counts.get(1, 0)],
+        'Parking spots': [class_counts.get(2, 0)],
+        'Cars': [class_counts.get(0, 0)],
+        'Empty disabled parking spots': [empty_disabled_spot],
+        'Occupied disabled parking spots': [occupied_disabled_spot],
+        'Empty parking spots': [empty_spot],
+        'Occupied parking spots': [occupied_spot],
         'Cars in transit or parked in non-parking spots': [cars_in_transit]
     })
         
@@ -272,14 +272,8 @@ def process_images(data_path: str, output_folder: str, threshold: float = 0.4, h
     if not os.path.exists(os.path.join(output_folder, 'images/')):
         os.makedirs(os.path.join(output_folder, 'images/'))
 
-    # Save the results in a dataframe
-    columns = ['Image File', 'Disabled parking spots count', 'Parking spots count', 'Cars count',
-            'Empty disabled parking spots count', 'Occupied disabled parking spots count',
-            'Empty parking spots count', 'Occupied parking spots count',
-            'Cars in transit or parked in non-parking spots']
-
     # Create an empty dataframe
-    results_df = pd.DataFrame(columns=columns)
+    results_df = pd.DataFrame()
 
     # Process each image and annotation in the folder
     print('Processing images...')
@@ -326,3 +320,41 @@ def is_custom_model(model: str, yoloversion: str):
         model_path = model
 
     return model, model_path
+
+
+# Function to split the dataset train and val sets
+def split_dataset(data_path: str, train_size: float = 0.8):
+    # lets put all the train.txt and val.txt info into a list
+    train_list = []
+    val_list = []
+    
+    # Read the train.txt file
+    with open(os.path.join(data_path, 'train.txt'), 'r') as f:
+        train_list = f.readlines()
+
+    # Read the val.txt file
+    with open(os.path.join(data_path, 'val.txt'), 'r') as f:
+        val_list = f.readlines()
+
+    # Create a list of all the file names
+    full_list = train_list + val_list
+
+    # Shuffle the list
+    np.random.shuffle(full_list)
+
+    # Split the list into train and val lists
+    train_size = int(len(full_list) * train_size)
+    train_list = full_list[:train_size]
+    val_list = full_list[train_size:]
+
+    # Write the train.txt file
+    with open(os.path.join(data_path, 'train.txt'), 'w') as f:
+        f.writelines(train_list)
+
+    # Write the val.txt file
+    with open(os.path.join(data_path, 'val.txt'), 'w') as f:
+        f.writelines(val_list)
+
+    print(f"Dataset split into train and val sets ✅")
+
+
