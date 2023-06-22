@@ -144,9 +144,9 @@ def draw_bounding_boxes(image_path, annotation_path, output_path, threshold, hig
     alpha = 0.4  # Transparency factor.
     
     # Image legend
-    text_position = (image.shape[1] - 310, 30)  # Top-right corner position
+    text_position = (image.shape[1] - 350, 30)  # Top-right corner position
     overlay = image.copy()
-    cv2.rectangle(overlay, (text_position[0] - 10, text_position[1] - 30), (text_position[0] + 300, text_position[1] + 80), (0, 0, 0), cv2.FILLED) # type: ignore
+    cv2.rectangle(overlay, (text_position[0] - 10, text_position[1] - 30), (text_position[0] + 320, text_position[1] + 80), (0, 0, 0), cv2.FILLED) # type: ignore
     image = cv2.addWeighted(overlay, alpha, image, 1 - alpha, 0) # Add the overlay to the image
     
     text = f'Disabled parking spots: {class_counts.get(1, 0)}'
