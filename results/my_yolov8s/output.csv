@@ -1,0 +1,24 @@
+Image File,Disabled parking spots count,Parking spots count,Cars count,Empty disabled parking spots count,Occupied disabled parking spots count,Empty parking spots count,Occupied parking spots count,Cars in transit or parked in non-parking spots
+empty_set1_60m_1.jpg,20,70,1,20,0,69,1,0
+empty_set1_60m_2.jpg,20,70,1,20,0,69,1,0
+empty_set1_65m_1.jpg,22,77,0,22,0,77,0,0
+empty_set1_70m_2.jpg,22,77,1,22,0,76,1,0
+empty_set1_75m_1.jpg,22,77,0,22,0,77,0,0
+empty_set2_30m_2.jpg,0,32,0,0,0,32,0,0
+empty_set2_30m_3.jpg,0,40,0,0,0,40,0,0
+empty_set2_70m_1.jpg,2,147,1,2,0,147,0,1
+empty_set2_70m_2.jpg,4,145,0,4,0,145,0,0
+occupied_set1_30m_1.jpg,8,16,19,8,0,2,14,5
+occupied_set1_30m_2.jpg,8,16,19,8,0,2,14,5
+occupied_set1_40m_1.jpg,7,49,47,7,0,6,43,4
+occupied_set1_50m_1.jpg,16,56,54,16,0,8,48,6
+occupied_set1_50m_2.jpg,16,56,54,16,0,8,48,6
+occupied_set1_60m_1.jpg,20,70,55,20,0,15,55,0
+occupied_set1_70m_1.jpg,22,77,62,22,0,17,60,2
+occupied_set1_70m_2.jpg,22,77,65,22,0,14,63,2
+occupied_set2_30m_1.jpg,0,44,17,0,0,28,16,1
+occupied_set2_30m_2.jpg,0,44,17,0,0,28,16,1
+occupied_set2_40m_1.jpg,0,80,21,0,0,61,19,2
+occupied_set2_50m_1.jpg,0,95,20,0,0,76,19,1
+occupied_set2_60m_1.jpg,2,113,33,2,0,84,29,4
+occupied_set2_70m_1.jpg,2,144,35,2,0,111,33,2
