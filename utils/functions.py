@@ -334,8 +334,8 @@ def split_dataset(data_path: str, train_size: float = 0.8):
     
     # Get the names of the files in image folder
     for file in os.listdir(os.path.join(data_path, 'images')):
-        # Append the file name without the extension
-        full_list.append(os.path.splitext(file)[0] + '\n')
+        if file.endswith('.jpg'):
+            full_list.append(file + '\n')
 
     # Shuffle the list
     np.random.shuffle(full_list)
