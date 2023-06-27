@@ -1,8 +1,7 @@
 import os
 import shutil
-import argparse
 
-from functions import split_dataset
+from functions import split_dataset, data_augmentation, only_car_label, parse_opt
 
 # root
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -20,45 +19,27 @@ def copy_data2yolov5(repo_path, yolo_path):
     shutil.copytree(data_path, os.path.join(yolo_path, 'data/custom-data'))
     print(f"Data copied to {os.path.join(yolo_path, 'data/custom-data')} ✅")
 
-    # Now, let's split the dataset
-    split_dataset(os.path.join(yolo_path, 'data/custom-data/'))
-
-
-def only_car_label(labels_path):
-    # Loop over all labels
-    for file in os.listdir(labels_path):
-        if file.endswith('.txt'):
-            with open(os.path.join(labels_path, file), 'r+') as f:
-                # I want to delete all lines that do not start with 0
-                lines = f.readlines()
-                f.seek(0)  # Go back to the beginning of the file
-                for line in lines:
-                    if line.startswith('0'):
-                        f.write(line)
-
-                f.truncate()  # Remove extra lines, if any
-                    
-    print(f"Only car labels left ✅")
-
-
-def parse_opt():
-    parser = argparse.ArgumentParser()
-    parser.add_argument('--reporoot', type=str, default=ROOT, help='path to repo root')
-    opt = parser.parse_args()
-    return opt
-
 
 def main(opt):
-    # get current working directory
+    # Get current working directory
     repo_path = opt.reporoot
-    # get yolov5 path
+    # Get yolov5 path
     yolo_path = os.path.join(repo_path, 'yolov5')
 
     print(f"Repo path: {repo_path}")
     print(f"Yolo path: {yolo_path}")
 
+    # Copy data to yolov5/data/custom-data
     copy_data2yolov5(repo_path, yolo_path)
+
+    # Delete all labels that are not cars
     only_car_label(os.path.join(yolo_path, 'data/custom-data/labels'))
+
+    # Data augmentation
+    data_augmentation(os.path.join(yolo_path, 'data/custom-data/'))
+    
+    # Now, let's split the dataset
+    split_dataset(os.path.join(yolo_path, 'data/custom-data/'))
 
 
 if __name__ == '__main__':
