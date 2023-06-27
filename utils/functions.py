@@ -334,8 +334,8 @@ def split_dataset(data_path: str, train_size: float = 0.8):
     
     # Get the names of the files in image folder
     for file in os.listdir(os.path.join(data_path, 'images')):
-        if file.endswith('.jpg'):
-            full_list.append(file + '\n')
+        # Appends the path of the image to the list
+        full_list.append('./images/' + file + '\n')
 
     # Shuffle the list
     np.random.shuffle(full_list)
@@ -443,6 +443,16 @@ def data_augmentation(data_path):
 
             # Rotate 30 degrees
             rotated_image, rotated_bboxes = rotate_image_and_bboxes(image, bboxes, 30)
+
+            # Verify if the rotated_bbox is inside the image, if not, ignore this bbox
+            for bbox in rotated_bboxes:
+                class_name, cx, cy, bbox_width, bbox_height = bbox
+                if not (cx >= 0.0 and cx <= 1.0):
+                    rotated_bboxes.remove(bbox)
+                
+                if not (cy >= 0.0 and cy <= 1.0):
+                    rotated_bboxes.remove(bbox)
+                    
 
             # Create new file with rotated_bboxes
             with open(os.path.join(labels_path, file.replace('.jpg', '_rotated.txt')), 'w') as f:
