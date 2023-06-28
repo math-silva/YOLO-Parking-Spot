@@ -55,3 +55,7 @@ backup/
 # heavy models
 models/*m.pt
 models/*l.pt
+
+# test runs
+runs
+videos

@@ -418,6 +418,21 @@ def rotate_image_and_bboxes(image, bboxes, angle):
     return rotated_image, rotated_bboxes
 
 
+def verify_bboxes(bboxes):
+    # Verify if the rotated_bbox is inside the image, if not, ignore this bbox
+    new_rotated_bboxes = []
+    for bbox in bboxes:
+        class_name, cx, cy, bbox_width, bbox_height = bbox
+        if not (cx >= 0.0 and cx <= 1.0):
+            continue
+        
+        if not (cy >= 0.0 and cy <= 1.0):
+            continue
+
+        new_rotated_bboxes.append(bbox)
+
+    return new_rotated_bboxes
+
 # Data augmentation function with rotation
 def data_augmentation(data_path):
     images_path = os.path.join(data_path, 'images')
@@ -445,14 +460,7 @@ def data_augmentation(data_path):
             rotated_image, rotated_bboxes = rotate_image_and_bboxes(image, bboxes, 30)
 
             # Verify if the rotated_bbox is inside the image, if not, ignore this bbox
-            for bbox in rotated_bboxes:
-                class_name, cx, cy, bbox_width, bbox_height = bbox
-                if not (cx >= 0.0 and cx <= 1.0):
-                    rotated_bboxes.remove(bbox)
-                
-                if not (cy >= 0.0 and cy <= 1.0):
-                    rotated_bboxes.remove(bbox)
-                    
+            rotated_bboxes = verify_bboxes(rotated_bboxes)
 
             # Create new file with rotated_bboxes
             with open(os.path.join(labels_path, file.replace('.jpg', '_rotated.txt')), 'w') as f:
@@ -465,6 +473,9 @@ def data_augmentation(data_path):
 
             # Rotate 60 degrees
             rotated_image, rotated_bboxes = rotate_image_and_bboxes(image, bboxes, 60)
+
+            # Verify if the rotated_bbox is inside the image, if not, ignore this bbox
+            rotated_bboxes = verify_bboxes(rotated_bboxes)
 
             # Create new file with rotated_bboxes
             with open(os.path.join(labels_path, file.replace('.jpg', '_rotated2.txt')), 'w') as f:
