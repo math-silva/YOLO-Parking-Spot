@@ -3,6 +3,7 @@
 # pylint: disable=unsubscriptable-object
 # pyright: reportUnknownMemberType=none, reportUnknownVariableType=none
 
+import torch
 import numpy as np
 import pandas as pd
 import cv2
@@ -247,7 +248,8 @@ def process_images(data_path: str, output_folder: str, threshold: float = 0.4, h
     
     # Check if the model name is provided
     if model != '':
-        if model.__contains__('/'): # if model is a path
+        # If model is a path
+        if model.__contains__("/") or model.__contains__("\\"):
             new_labels_folder = model
         else: # if model is a name
             new_labels_folder = os.path.join(ROOT, f'results/{model}/labels/')
@@ -495,3 +497,32 @@ def parse_opt():
     parser.add_argument('--reporoot', type=str, default=ROOT, help='path to repo root')
     opt = parser.parse_args()
     return opt
+
+
+# Generate a DataFrame containing the information about the model
+def model_information(my_model: str):
+    if not my_model.endswith(".pt"): # If it doesn't end with .pt, add it
+        my_model = my_model + ".pt"
+
+    # Load the trained model
+    if my_model.__contains__("/") or my_model.__contains__("\\"): # If model is a path
+        model = torch.load(my_model)
+    else:
+        model = torch.load(f'{ROOT}/models/{my_model}')
+
+    # Analyze the model
+    num_parameters = sum(p.numel() for p in model.parameters() if p.requires_grad)
+    model_summary = str(model)
+    output_classes = model.num_classes
+
+    # Create a pandas DataFrame
+    data = {
+        'Model Summary': [model_summary],
+        'Number of Parameters': [num_parameters],
+        'Output Classes': [output_classes]
+    }
+
+    df = pd.DataFrame(data)
+
+    # Print the DataFrame
+    return df
