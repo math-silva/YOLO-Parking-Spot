@@ -12,6 +12,8 @@ import os
 import shutil
 import argparse
 
+from PIL import Image
+
 # ROOT DIRECTORY
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
@@ -526,7 +528,7 @@ def plot_model_size(df: pd.DataFrame):
     if not os.path.exists(f'{ROOT}/.temp/plots'):
         os.makedirs(f'{ROOT}/.temp/plots')
 
-    plt.savefig(f'{ROOT}/.temp/plots/model_size.jpg')  # Save the plot as an image file
+    plt.savefig(f'{ROOT}/.temp/plots/01_model_size.jpg')  # Save the plot as an image file
 
     plt.show()
     
@@ -558,7 +560,7 @@ def plot_model_params(df: pd.DataFrame):
     if not os.path.exists(f'{ROOT}/.temp/plots'):
         os.makedirs(f'{ROOT}/.temp/plots')
 
-    plt.savefig(f'{ROOT}/.temp/plots/model_params.jpg')  # Save the plot as an image file
+    plt.savefig(f'{ROOT}/.temp/plots/02_model_params.jpg')  # Save the plot as an image file
 
 
     plt.show()
@@ -589,7 +591,7 @@ def plot_model_gflops(df: pd.DataFrame):
     if not os.path.exists(f'{ROOT}/.temp/plots'):
         os.makedirs(f'{ROOT}/.temp/plots')
 
-    plt.savefig(f'{ROOT}/.temp/plots/model_gflops.jpg')  # Save the plot as an image file
+    plt.savefig(f'{ROOT}/.temp/plots/03_model_gflops.jpg')  # Save the plot as an image file
 
     plt.show()
     
@@ -614,7 +616,7 @@ def plot_precision_recall(df: pd.DataFrame):
     if not os.path.exists(f'{ROOT}/.temp/plots'):
         os.makedirs(f'{ROOT}/.temp/plots')
 
-    plt.savefig(f'{ROOT}/.temp/plots/model_precision_recall.jpg')  # Save the plot as an image file
+    plt.savefig(f'{ROOT}/.temp/plots/04_model_precision_recall.jpg')  # Save the plot as an image file
 
     plt.show()
 
@@ -628,7 +630,7 @@ def plot_mAP(df: pd.DataFrame):
 
     plt.xlabel('Trained Model')
     plt.ylabel('mAP50-95')
-    plt.title('mAP50-95 Comparison')
+    plt.title('mAP 50-95% Comparison')
 
     plt.xticks(range(len(sorted_df)), sorted_df['Model'])
 
@@ -645,6 +647,29 @@ def plot_mAP(df: pd.DataFrame):
     if not os.path.exists(f'{ROOT}/.temp/plots'):
         os.makedirs(f'{ROOT}/.temp/plots')
 
-    plt.savefig(f'{ROOT}/.temp/plots/model_map.jpg')  # Save the plot as an image file
+    plt.savefig(f'{ROOT}/.temp/plots/05_model_map.jpg')  # Save the plot as an image file
 
     plt.show()
+
+# Get images from plots
+def save_plots(path: str = f'{ROOT}/.temp/plots/'):
+    # Let's combine the plots into one image, vertically
+    images = []
+    for file in os.listdir(path):
+        if file.endswith('.jpg'):
+            images.append(Image.open(os.path.join(path, file)))
+
+    widths, heights = zip(*(i.size for i in images))
+
+    max_width = max(widths)
+    total_height = sum(heights)
+
+    new_im = Image.new('RGB', (max_width, total_height))
+
+    y_offset = 0
+    for im in images:
+        new_im.paste(im, (0, y_offset))
+        y_offset += im.size[1]
+   
+    # Save the combined image
+    new_im.save(f'{ROOT}/models/model_comparison.jpg')
