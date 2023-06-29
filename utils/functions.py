@@ -525,10 +525,10 @@ def plot_model_size(df: pd.DataFrame):
     plt.legend(loc='upper left')
 
     # Create a temporary directory to store the plot as an image file
-    if not os.path.exists(f'{ROOT}/.temp/plots'):
-        os.makedirs(f'{ROOT}/.temp/plots')
+    if not os.path.exists(f'{ROOT}/models/plots'):
+        os.makedirs(f'{ROOT}/models/plots')
 
-    plt.savefig(f'{ROOT}/.temp/plots/01_model_size.jpg')  # Save the plot as an image file
+    plt.savefig(f'{ROOT}/models/plots/01_model_size.jpg')  # Save the plot as an image file
 
     plt.show()
     
@@ -557,10 +557,10 @@ def plot_model_params(df: pd.DataFrame):
     plt.legend(loc='upper left')
 
     # Create a temporary directory to store the plot as an image file
-    if not os.path.exists(f'{ROOT}/.temp/plots'):
-        os.makedirs(f'{ROOT}/.temp/plots')
+    if not os.path.exists(f'{ROOT}/models/plots'):
+        os.makedirs(f'{ROOT}/models/plots')
 
-    plt.savefig(f'{ROOT}/.temp/plots/02_model_params.jpg')  # Save the plot as an image file
+    plt.savefig(f'{ROOT}/models/plots/02_model_params.jpg')  # Save the plot as an image file
 
 
     plt.show()
@@ -588,10 +588,10 @@ def plot_model_gflops(df: pd.DataFrame):
     plt.legend(loc='upper left')
 
     # Create a temporary directory to store the plot as an image file
-    if not os.path.exists(f'{ROOT}/.temp/plots'):
-        os.makedirs(f'{ROOT}/.temp/plots')
+    if not os.path.exists(f'{ROOT}/models/plots'):
+        os.makedirs(f'{ROOT}/models/plots')
 
-    plt.savefig(f'{ROOT}/.temp/plots/03_model_gflops.jpg')  # Save the plot as an image file
+    plt.savefig(f'{ROOT}/models/plots/03_model_gflops.jpg')  # Save the plot as an image file
 
     plt.show()
     
@@ -613,10 +613,10 @@ def plot_precision_recall(df: pd.DataFrame):
     plt.legend()
 
     # Create a temporary directory to store the plot as an image file
-    if not os.path.exists(f'{ROOT}/.temp/plots'):
-        os.makedirs(f'{ROOT}/.temp/plots')
+    if not os.path.exists(f'{ROOT}/models/plots'):
+        os.makedirs(f'{ROOT}/models/plots')
 
-    plt.savefig(f'{ROOT}/.temp/plots/04_model_precision_recall.jpg')  # Save the plot as an image file
+    plt.savefig(f'{ROOT}/models/plots/04_model_precision_recall.jpg')  # Save the plot as an image file
 
     plt.show()
 
@@ -644,15 +644,15 @@ def plot_mAP(df: pd.DataFrame):
     plt.ylim([0.6, 1])
 
     # Create a temporary directory to store the plot as an image file
-    if not os.path.exists(f'{ROOT}/.temp/plots'):
-        os.makedirs(f'{ROOT}/.temp/plots')
+    if not os.path.exists(f'{ROOT}/models/plots'):
+        os.makedirs(f'{ROOT}/models/plots')
 
-    plt.savefig(f'{ROOT}/.temp/plots/05_model_map.jpg')  # Save the plot as an image file
+    plt.savefig(f'{ROOT}/models/plots/05_model_map.jpg')  # Save the plot as an image file
 
     plt.show()
 
 # Get images from plots
-def save_plots(path: str = f'{ROOT}/.temp/plots/'):
+def save_plots(path: str = f'{ROOT}/models/plots/'):
     # Let's combine the plots into one image, vertically
     images = []
     for file in os.listdir(path):
@@ -672,4 +672,4 @@ def save_plots(path: str = f'{ROOT}/.temp/plots/'):
         y_offset += im.size[1]
    
     # Save the combined image
-    new_im.save(f'{ROOT}/models/model_comparison.jpg')
+    new_im.save(f'{ROOT}/models/models_comparison.jpg')
