@@ -2,4 +2,4 @@
 
 <img src="images/project-banner.png">
 
-<img src="images/iou-example.jpg">
+<img src="images/iou-example.png">

@@ -12,6 +12,7 @@ import os
 import shutil
 import argparse
 
+from sklearn.metrics import mean_absolute_error
 from PIL import Image
 
 # ROOT DIRECTORY
@@ -513,7 +514,7 @@ def plot_model_size(df: pd.DataFrame):
 
     plt.xlabel('Trained Model')
     plt.ylabel('Model Size (MB)')
-    plt.title('Model Size Comparison')
+    plt.title('Size Comparison')
 
     plt.xticks(range(len(sorted_df)), sorted_df['Model'])
 
@@ -543,7 +544,7 @@ def plot_model_params(df: pd.DataFrame):
 
     plt.xlabel('Trained Model')
     plt.ylabel('Parameters')
-    plt.title('Model Parameters Comparison')
+    plt.title('Parameters Comparison')
     plt.xticks(range(len(sorted_df_params)), sorted_df_params['Model'])
 
     for bar, model_name in zip(bars_params, sorted_df_params['Model']):
@@ -577,7 +578,7 @@ def plot_model_gflops(df: pd.DataFrame):
 
     plt.xlabel('Trained Model')
     plt.ylabel('GFLOPs')
-    plt.title('Model GFLOPs Comparison')
+    plt.title('GFLOPs Comparison')
     plt.xticks(range(len(sorted_df_gflops)), sorted_df_gflops['Model'])
 
     for bar, model_name in zip(bars_gflops, sorted_df_gflops['Model']):
@@ -673,3 +674,47 @@ def save_plots(path: str = f'{ROOT}/models/plots/'):
    
     # Save the combined image
     new_im.save(f'{ROOT}/models/models_comparison.jpg')
+
+
+def get_results_df(df: pd.DataFrame, yolov5n_df: pd.DataFrame, yolov5s_df: pd.DataFrame, yolov8n_df: pd.DataFrame, yolov8s_df: pd.DataFrame):
+    results = {
+        'Model': ['YOLOv5n', 'YOLOv5s', 'YOLOv8n', 'YOLOv8s'],
+        'Cars MAE': [
+            mean_absolute_error(df['Cars'], yolov5n_df['Cars']),
+            mean_absolute_error(df['Cars'], yolov5s_df['Cars']),
+            mean_absolute_error(df['Cars'], yolov8n_df['Cars']),
+            mean_absolute_error(df['Cars'], yolov8s_df['Cars'])
+        ],
+        'Occupied disabled parking spots MAE': [
+            mean_absolute_error(df['Occupied disabled parking spots'], yolov5n_df['Occupied disabled parking spots']),
+            mean_absolute_error(df['Occupied disabled parking spots'], yolov5s_df['Occupied disabled parking spots']),
+            mean_absolute_error(df['Occupied disabled parking spots'], yolov8n_df['Occupied disabled parking spots']),
+            mean_absolute_error(df['Occupied disabled parking spots'], yolov8s_df['Occupied disabled parking spots'])
+        ],
+        'Empty disabled parking spots MAE': [
+            mean_absolute_error(df['Empty disabled parking spots'], yolov5n_df['Empty disabled parking spots']),
+            mean_absolute_error(df['Empty disabled parking spots'], yolov5s_df['Empty disabled parking spots']),
+            mean_absolute_error(df['Empty disabled parking spots'], yolov8n_df['Empty disabled parking spots']),
+            mean_absolute_error(df['Empty disabled parking spots'], yolov8s_df['Empty disabled parking spots'])
+        ],
+        'Occupied parking spots MAE': [
+            mean_absolute_error(df['Occupied parking spots'], yolov5n_df['Occupied parking spots']),
+            mean_absolute_error(df['Occupied parking spots'], yolov5s_df['Occupied parking spots']),
+            mean_absolute_error(df['Occupied parking spots'], yolov8n_df['Occupied parking spots']),
+            mean_absolute_error(df['Occupied parking spots'], yolov8s_df['Occupied parking spots'])
+        ],
+        'Empty parking spots MAE': [
+            mean_absolute_error(df['Empty parking spots'], yolov5n_df['Empty parking spots']),
+            mean_absolute_error(df['Empty parking spots'], yolov5s_df['Empty parking spots']),
+            mean_absolute_error(df['Empty parking spots'], yolov8n_df['Empty parking spots']),
+            mean_absolute_error(df['Empty parking spots'], yolov8s_df['Empty parking spots'])
+        ],
+        'Cars in transit or parked in non-parking spots MAE': [
+            mean_absolute_error(df['Cars in transit or parked in non-parking spots'], yolov5n_df['Cars in transit or parked in non-parking spots']),
+            mean_absolute_error(df['Cars in transit or parked in non-parking spots'], yolov5s_df['Cars in transit or parked in non-parking spots']),
+            mean_absolute_error(df['Cars in transit or parked in non-parking spots'], yolov8n_df['Cars in transit or parked in non-parking spots']),
+            mean_absolute_error(df['Cars in transit or parked in non-parking spots'], yolov8s_df['Cars in transit or parked in non-parking spots'])
+        ],
+    }
+    
+    return pd.DataFrame.from_dict(results)
