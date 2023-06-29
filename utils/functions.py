@@ -3,6 +3,7 @@
 # pylint: disable=unsubscriptable-object
 # pyright: reportUnknownMemberType=none, reportUnknownVariableType=none
 
+import matplotlib.pyplot as plt
 import torch
 import numpy as np
 import pandas as pd
@@ -499,30 +500,151 @@ def parse_opt():
     return opt
 
 
-# Generate a DataFrame containing the information about the model
-def model_information(my_model: str):
-    if not my_model.endswith(".pt"): # If it doesn't end with .pt, add it
-        my_model = my_model + ".pt"
+## Models comparison functions ##
 
-    # Load the trained model
-    if my_model.__contains__("/") or my_model.__contains__("\\"): # If model is a path
-        model = torch.load(my_model)
-    else:
-        model = torch.load(f'{ROOT}/models/{my_model}')
+def plot_model_size(df: pd.DataFrame):
+    sorted_df = df.sort_values('Model Size (MB)')  # Sort DataFrame by 'Model Size (MB)'
 
-    # Analyze the model
-    num_parameters = sum(p.numel() for p in model.parameters() if p.requires_grad)
-    model_summary = str(model)
-    output_classes = model.num_classes
+    plt.figure(figsize=(10, 6))
+    colors = ['blue', 'green', 'red', 'orange']
+    bars = plt.bar(range(len(sorted_df)), sorted_df['Model Size (MB)'], color=colors)
 
-    # Create a pandas DataFrame
-    data = {
-        'Model Summary': [model_summary],
-        'Number of Parameters': [num_parameters],
-        'Output Classes': [output_classes]
-    }
+    plt.xlabel('Trained Model')
+    plt.ylabel('Model Size (MB)')
+    plt.title('Model Size Comparison')
 
-    df = pd.DataFrame(data)
+    plt.xticks(range(len(sorted_df)), sorted_df['Model'])
 
-    # Print the DataFrame
-    return df
+    for bar, model_name in zip(bars, sorted_df['Model']):
+        height = bar.get_height()
+        plt.text(bar.get_x() + bar.get_width() / 2, height, str(height), ha='center', va='bottom')
+        bar.set_label(model_name)
+
+    plt.legend(loc='upper left')
+
+    # Create a temporary directory to store the plot as an image file
+    if not os.path.exists(f'{ROOT}/.temp/plots'):
+        os.makedirs(f'{ROOT}/.temp/plots')
+
+    plt.savefig(f'{ROOT}/.temp/plots/model_size.jpg')  # Save the plot as an image file
+
+    plt.show()
+    
+# Parameters and GFLOPs Comparison
+def plot_model_params(df: pd.DataFrame):
+    sorted_df_params = df.sort_values('Parameters')  # Sort DataFrame by 'Parameters'
+    plt.figure(figsize=(10, 6))
+
+    # Plotting Model Parameters
+    colors = ['blue', 'green', 'red', 'orange']
+    bars_params = plt.bar(range(len(sorted_df_params)), sorted_df_params['Parameters'], color=colors)
+
+    plt.xlabel('Trained Model')
+    plt.ylabel('Parameters')
+    plt.title('Model Parameters Comparison')
+    plt.xticks(range(len(sorted_df_params)), sorted_df_params['Model'])
+
+    for bar, model_name in zip(bars_params, sorted_df_params['Model']):
+        height = bar.get_height()
+        plt.text(bar.get_x() + bar.get_width() / 2, height, str(height), ha='center', va='bottom')
+        bar.set_label(model_name)
+
+    # Format y-axis labels
+    plt.ticklabel_format(style='plain', axis='y')
+
+    plt.legend(loc='upper left')
+
+    # Create a temporary directory to store the plot as an image file
+    if not os.path.exists(f'{ROOT}/.temp/plots'):
+        os.makedirs(f'{ROOT}/.temp/plots')
+
+    plt.savefig(f'{ROOT}/.temp/plots/model_params.jpg')  # Save the plot as an image file
+
+
+    plt.show()
+
+
+def plot_model_gflops(df: pd.DataFrame):
+    sorted_df_gflops = df.sort_values('GFLOPs')  # Sort DataFrame by 'GFLOPs'
+
+    plt.figure(figsize=(10, 6))
+
+    # Plotting Model GFLOPs
+    colors = ['blue', 'green', 'red', 'orange']
+    bars_gflops = plt.bar(range(len(sorted_df_gflops)), sorted_df_gflops['GFLOPs'], color=colors)
+
+    plt.xlabel('Trained Model')
+    plt.ylabel('GFLOPs')
+    plt.title('Model GFLOPs Comparison')
+    plt.xticks(range(len(sorted_df_gflops)), sorted_df_gflops['Model'])
+
+    for bar, model_name in zip(bars_gflops, sorted_df_gflops['Model']):
+        height = bar.get_height()
+        plt.text(bar.get_x() + bar.get_width() / 2, height, str(height), ha='center', va='bottom')
+        bar.set_label(model_name)
+
+    plt.legend(loc='upper left')
+
+    # Create a temporary directory to store the plot as an image file
+    if not os.path.exists(f'{ROOT}/.temp/plots'):
+        os.makedirs(f'{ROOT}/.temp/plots')
+
+    plt.savefig(f'{ROOT}/.temp/plots/model_gflops.jpg')  # Save the plot as an image file
+
+    plt.show()
+    
+
+# Plot the Precision and Recall
+def plot_precision_recall(df: pd.DataFrame):
+    plt.figure(figsize=(10, 6))
+    bar_width = 0.35
+    index = np.arange(len(df))
+
+    plt.bar(index, df['Precision'], width=bar_width, label='Precision')
+    plt.bar(index + bar_width, df['Recall'], width=bar_width, label='Recall')
+
+    plt.xlabel('Trained Model')
+    plt.ylabel('Score')
+    plt.title('Precision and Recall Comparison')
+    plt.xticks(index + bar_width / 2, df['Model'])
+    plt.ylim([0.97, 1])
+    plt.legend()
+
+    # Create a temporary directory to store the plot as an image file
+    if not os.path.exists(f'{ROOT}/.temp/plots'):
+        os.makedirs(f'{ROOT}/.temp/plots')
+
+    plt.savefig(f'{ROOT}/.temp/plots/model_precision_recall.jpg')  # Save the plot as an image file
+
+    plt.show()
+
+# Plot the mAP50-95
+def plot_mAP(df: pd.DataFrame):
+    sorted_df = df.sort_values('mAP50-95')  # Sort DataFrame by 'mAP50-95'
+
+    plt.figure(figsize=(10, 6))
+    colors = ['blue', 'green', 'red', 'orange']
+    bars = plt.bar(range(len(sorted_df)), sorted_df['mAP50-95'], color=colors)
+
+    plt.xlabel('Trained Model')
+    plt.ylabel('mAP50-95')
+    plt.title('mAP50-95 Comparison')
+
+    plt.xticks(range(len(sorted_df)), sorted_df['Model'])
+
+    for bar, model_name in zip(bars, sorted_df['Model']):
+        height = bar.get_height()
+        plt.text(bar.get_x() + bar.get_width() / 2, height, f'{height:.3f}', ha='center', va='bottom')
+        bar.set_label(model_name)
+
+    plt.legend(loc='upper left')
+
+    plt.ylim([0.6, 1])
+
+    # Create a temporary directory to store the plot as an image file
+    if not os.path.exists(f'{ROOT}/.temp/plots'):
+        os.makedirs(f'{ROOT}/.temp/plots')
+
+    plt.savefig(f'{ROOT}/.temp/plots/model_map.jpg')  # Save the plot as an image file
+
+    plt.show()
