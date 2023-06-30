@@ -339,9 +339,10 @@ def split_dataset(data_path: str, train_size: float = 0.8):
     val_list = []
     
     # Get the names of the files in image folder
-    for file in os.listdir(os.path.join(data_path, 'images')):
+    for file in os.listdir(os.path.join(data_path, 'fold_0/images')):
         # Appends the path of the image to the list
-        full_list.append('./images/' + file + '\n')
+        if file.endswith('.jpg'):
+            full_list.append('./images/' + file + '\n')
 
     # Shuffle the list
     np.random.shuffle(full_list)
@@ -349,15 +350,32 @@ def split_dataset(data_path: str, train_size: float = 0.8):
     # Split the list into train and val lists
     train_size = int(len(full_list) * train_size)
     train_list = full_list[:train_size]
+    train_list_rotated = [x.replace('.jpg', '_rotated.jpg') for x in train_list]
+    train_list_rotated2 = [x.replace('.jpg', '_rotated2.jpg') for x in train_list]
+
     val_list = full_list[train_size:]
+    val_list_rotated = [x.replace('.jpg', '_rotated.jpg') for x in val_list]
+    val_list_rotated2 = [x.replace('.jpg', '_rotated2.jpg') for x in val_list]
 
-    # Write the train.txt file
-    with open(os.path.join(data_path, 'train.txt'), 'w') as f:
+    # Write the train.txt file to fold 0
+    with open(os.path.join(data_path, 'fold_0/train.txt'), 'w') as f:
         f.writelines(train_list)
+        f.writelines(train_list_rotated)
+        f.writelines(train_list_rotated2)
 
-    # Write the val.txt file
-    with open(os.path.join(data_path, 'val.txt'), 'w') as f:
+    # Write the val.txt file to fold 0
+    with open(os.path.join(data_path, 'fold_0/val.txt'), 'w') as f:
         f.writelines(val_list)
+
+    # Write the train.txt file to fold 1
+    with open(os.path.join(data_path, 'fold_1/train.txt'), 'w') as f:
+        f.writelines(val_list)
+        f.writelines(val_list_rotated)
+        f.writelines(val_list_rotated2)
+
+    # Write the val.txt file to fold 1
+    with open(os.path.join(data_path, 'fold_1/val.txt'), 'w') as f:
+        f.writelines(train_list)
 
     print(f"Dataset split into train and val sets ✅")
 
@@ -440,12 +458,21 @@ def verify_bboxes(bboxes):
     return new_rotated_bboxes
 
 # Data augmentation function with rotation
-def data_augmentation(data_path):
+def data_augmentation(data_path, train_txt):
+    train_list = []
+    with open(os.path.join(data_path, train_txt), 'r') as f:
+        train_list = f.readlines()
+
     images_path = os.path.join(data_path, 'images')
     labels_path = os.path.join(data_path, 'labels')
 
+    # now leave only the last name without \n
+    train_list = [(x.split('/')[-1].split('.')[0]) + '.jpg' for x in train_list]
+    
     # Loop over all images
     for file in os.listdir(images_path):
+        if file not in train_list:
+            continue
         if file.endswith('.jpg'):
             # Open image
             image = cv2.imread(os.path.join(images_path, file))
