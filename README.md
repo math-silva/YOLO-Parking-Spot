@@ -108,13 +108,23 @@ To assess the accuracy of our models, we calculated various metrics, including a
 | YOLOv8n | 0.739    | 1.000    | 1.000    | 1.000    | 1.000   | 0.739    |
 | YOLOv8s | 0.695    | 1.000    | 1.000    | 0.739    | 0.739   | 0.782    |
 
-The accuracy metrics provide an assessment of the models' performance in detecting specific objects and occupancy states. When considering the car count accuracy, all models achieved similar results, with accuracies ranging from 0.695 to 0.739. These accuracies indicate that the models were able to detect a significant portion of the cars present in the images. It is important to note that some cars were not marked as the models did not anticipate detecting those specific cars in the images. Despite this, the models still performed remarkably well overall.
+The table above presents the Accuracy values for different columns based on predictions made by various models. These values indicate the models' performance in their respective tasks. Overall, the models achieved good results, particularly in identifying occupied and empty parking spots.
 
-Regarding the accuracy of disabled parking spots and general occupancy, all models achieved perfect scores, indicating that they were highly successful in accurately identifying occupied and empty parking spots, including disabled parking spots. This demonstrates the models' ability to effectively differentiate between occupied and unoccupied spaces.
+However, an interesting observation arises concerning the "Cars" column. The Accuracy values for this column reveal that the models made some errors in predicting the number of cars identified in the images. Further analysis revealed that these errors were not due to shortcomings of the models themselves. Instead, the errors occurred because there were instances where cars were not manually marked during the dataset creation process.
+
+In other words, the models were able to detect cars in certain positions that were initially overlooked during the manual annotation of the dataset. This realization highlights the models' proficiency in identifying cars, even in unexpected positions. The errors observed in the "Cars" column can be attributed to human error during the dataset labeling phase, where some cars were incorrectly assumed to be undetectable by the models.
+
+These results emphasize the models' capabilities in accurately identifying occupied and empty parking spots. They also underscore the importance of thorough and precise dataset labeling to ensure accurate evaluation and performance assessment of the models.
 
 ## Conclusion
 
-(I will fill in the conclusion here later)
+Based on the analysis presented, it can be concluded that all four models achieved excellent results for the parking lot at ICT Unifesp. However, based on certain factors, the YOLOv5n model can be considered the best option for this particular case.
+
+The YOLOv5n model demonstrated impressive performance in accurately identifying occupied and empty parking spots, as indicated by the consistently great Accuracy values across multiple columns. Additionally, it has the advantage of being the lightest in terms of file size (in MB) and having the fewest parameters compared to the other models. This translates into faster processing speed and lower memory usage, making it a practical choice for real-time applications.
+
+To further improve our work, it is recommended to create a larger and more precisely labeled dataset. By expanding the dataset and ensuring accurate labeling of cars and corresponding labels, we can enhance the training process and increase the model's ability to detect cars in various positions and conditions accurately.
+
+By investing in a more comprehensive and accurately labeled dataset, we can train a model that is tailored specifically to the ICT Unifesp parking lot, optimizing its performance and ensuring it meets the specific requirements of our study. With continued efforts to refine the dataset and fine-tune the model, we can strive for even better results and contribute to the advancement of parking spot detection and monitoring systems.
 
 ## Additional Information
 - [Paper](paper_url)
