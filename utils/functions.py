@@ -12,7 +12,7 @@ import os
 import shutil
 import argparse
 
-from sklearn.metrics import mean_absolute_error
+from sklearn.metrics import confusion_matrix
 from PIL import Image
 
 # ROOT DIRECTORY
@@ -532,6 +532,30 @@ def parse_opt():
 
 ## Models comparison functions ##
 
+def mean_df(df: pd.DataFrame):
+    # Specify the columns for which you want to calculate the mean
+    columns_to_mean = ['Precision', 'Recall', 'mAP0-50', 'mAP50-95']
+
+    # Calculate the average values for each model precision, recall, and mAP
+    means = []
+    for i in range(0, len(df), 2):
+        avg = df.iloc[i:i+2][columns_to_mean].mean()
+        means.append(avg)
+
+    # Create the new DataFrame with the average values
+    new_data = {
+        'Model': ['YOLOv5n', 'YOLOv5s', 'YOLOv8n', 'YOLOv8s'],
+        'Model Size (MB)': [df.iloc[0]['Model Size (MB)'], df.iloc[2]['Model Size (MB)'], df.iloc[4]['Model Size (MB)'], df.iloc[6]['Model Size (MB)']],
+        'Parameters': [df.iloc[0]['Parameters'], df.iloc[2]['Parameters'], df.iloc[4]['Parameters'], df.iloc[6]['Parameters']],
+        'Precision': [mean['Precision'] for mean in means],
+        'Recall': [mean['Recall'] for mean in means],
+        'mAP0-50': [mean['mAP0-50'] for mean in means],
+        'mAP50-95': [mean['mAP50-95'] for mean in means]
+    }
+
+    return pd.DataFrame(new_data)
+
+
 def plot_model_size(df: pd.DataFrame):
     sorted_df = df.sort_values('Model Size (MB)')  # Sort DataFrame by 'Model Size (MB)'
 
@@ -593,35 +617,6 @@ def plot_model_params(df: pd.DataFrame):
 
     plt.show()
 
-
-def plot_model_gflops(df: pd.DataFrame):
-    sorted_df_gflops = df.sort_values('GFLOPs')  # Sort DataFrame by 'GFLOPs'
-
-    plt.figure(figsize=(10, 6))
-
-    # Plotting Model GFLOPs
-    colors = ['blue', 'green', 'red', 'orange']
-    bars_gflops = plt.bar(range(len(sorted_df_gflops)), sorted_df_gflops['GFLOPs'], color=colors)
-
-    plt.xlabel('Trained Model')
-    plt.ylabel('GFLOPs')
-    plt.title('GFLOPs Comparison')
-    plt.xticks(range(len(sorted_df_gflops)), sorted_df_gflops['Model'])
-
-    for bar, model_name in zip(bars_gflops, sorted_df_gflops['Model']):
-        height = bar.get_height()
-        plt.text(bar.get_x() + bar.get_width() / 2, height, str(height), ha='center', va='bottom')
-        bar.set_label(model_name)
-
-    plt.legend(loc='upper left')
-
-    # Create a temporary directory to store the plot as an image file
-    if not os.path.exists(f'{ROOT}/models/plots'):
-        os.makedirs(f'{ROOT}/models/plots')
-
-    plt.savefig(f'{ROOT}/models/plots/03_model_gflops.jpg')  # Save the plot as an image file
-
-    plt.show()
     
 
 # Plot the Precision and Recall
@@ -637,14 +632,14 @@ def plot_precision_recall(df: pd.DataFrame):
     plt.ylabel('Score')
     plt.title('Precision and Recall Comparison')
     plt.xticks(index + bar_width / 2, df['Model'])
-    plt.ylim([0.97, 1])
+    plt.ylim([0.80, 1])
     plt.legend()
 
     # Create a temporary directory to store the plot as an image file
     if not os.path.exists(f'{ROOT}/models/plots'):
         os.makedirs(f'{ROOT}/models/plots')
 
-    plt.savefig(f'{ROOT}/models/plots/04_model_precision_recall.jpg')  # Save the plot as an image file
+    plt.savefig(f'{ROOT}/models/plots/03_model_precision_recall.jpg')  # Save the plot as an image file
 
     plt.show()
 
@@ -675,7 +670,7 @@ def plot_mAP(df: pd.DataFrame):
     if not os.path.exists(f'{ROOT}/models/plots'):
         os.makedirs(f'{ROOT}/models/plots')
 
-    plt.savefig(f'{ROOT}/models/plots/05_model_map.jpg')  # Save the plot as an image file
+    plt.savefig(f'{ROOT}/models/plots/04_model_map.jpg')  # Save the plot as an image file
 
     plt.show()
 
@@ -703,45 +698,47 @@ def save_plots(path: str = f'{ROOT}/models/plots/'):
     new_im.save(f'{ROOT}/models/models_comparison.jpg')
 
 
+import pandas as pd
+
 def get_results_df(df: pd.DataFrame, yolov5n_df: pd.DataFrame, yolov5s_df: pd.DataFrame, yolov8n_df: pd.DataFrame, yolov8s_df: pd.DataFrame):
     results = {
         'Model': ['YOLOv5n', 'YOLOv5s', 'YOLOv8n', 'YOLOv8s'],
-        'Cars MAE': [
-            mean_absolute_error(df['Cars'], yolov5n_df['Cars']),
-            mean_absolute_error(df['Cars'], yolov5s_df['Cars']),
-            mean_absolute_error(df['Cars'], yolov8n_df['Cars']),
-            mean_absolute_error(df['Cars'], yolov8s_df['Cars'])
+        'Cars Accuracy': [
+            (yolov5n_df['Cars'] == df['Cars']).mean(),
+            (yolov5s_df['Cars'] == df['Cars']).mean(),
+            (yolov8n_df['Cars'] == df['Cars']).mean(),
+            (yolov8s_df['Cars'] == df['Cars']).mean()
         ],
-        'Occupied disabled parking spots MAE': [
-            mean_absolute_error(df['Occupied disabled parking spots'], yolov5n_df['Occupied disabled parking spots']),
-            mean_absolute_error(df['Occupied disabled parking spots'], yolov5s_df['Occupied disabled parking spots']),
-            mean_absolute_error(df['Occupied disabled parking spots'], yolov8n_df['Occupied disabled parking spots']),
-            mean_absolute_error(df['Occupied disabled parking spots'], yolov8s_df['Occupied disabled parking spots'])
+        'Occupied disabled parking spots Accuracy': [
+            (yolov5n_df['Occupied disabled parking spots'] == df['Occupied disabled parking spots']).mean(),
+            (yolov5s_df['Occupied disabled parking spots'] == df['Occupied disabled parking spots']).mean(),
+            (yolov8n_df['Occupied disabled parking spots'] == df['Occupied disabled parking spots']).mean(),
+            (yolov8s_df['Occupied disabled parking spots'] == df['Occupied disabled parking spots']).mean()
         ],
-        'Empty disabled parking spots MAE': [
-            mean_absolute_error(df['Empty disabled parking spots'], yolov5n_df['Empty disabled parking spots']),
-            mean_absolute_error(df['Empty disabled parking spots'], yolov5s_df['Empty disabled parking spots']),
-            mean_absolute_error(df['Empty disabled parking spots'], yolov8n_df['Empty disabled parking spots']),
-            mean_absolute_error(df['Empty disabled parking spots'], yolov8s_df['Empty disabled parking spots'])
+        'Empty disabled parking spots Accuracy': [
+            (yolov5n_df['Empty disabled parking spots'] == df['Empty disabled parking spots']).mean(),
+            (yolov5s_df['Empty disabled parking spots'] == df['Empty disabled parking spots']).mean(),
+            (yolov8n_df['Empty disabled parking spots'] == df['Empty disabled parking spots']).mean(),
+            (yolov8s_df['Empty disabled parking spots'] == df['Empty disabled parking spots']).mean()
         ],
-        'Occupied parking spots MAE': [
-            mean_absolute_error(df['Occupied parking spots'], yolov5n_df['Occupied parking spots']),
-            mean_absolute_error(df['Occupied parking spots'], yolov5s_df['Occupied parking spots']),
-            mean_absolute_error(df['Occupied parking spots'], yolov8n_df['Occupied parking spots']),
-            mean_absolute_error(df['Occupied parking spots'], yolov8s_df['Occupied parking spots'])
+        'Occupied parking spots Accuracy': [
+            (yolov5n_df['Occupied parking spots'] == df['Occupied parking spots']).mean(),
+            (yolov5s_df['Occupied parking spots'] == df['Occupied parking spots']).mean(),
+            (yolov8n_df['Occupied parking spots'] == df['Occupied parking spots']).mean(),
+            (yolov8s_df['Occupied parking spots'] == df['Occupied parking spots']).mean()
         ],
-        'Empty parking spots MAE': [
-            mean_absolute_error(df['Empty parking spots'], yolov5n_df['Empty parking spots']),
-            mean_absolute_error(df['Empty parking spots'], yolov5s_df['Empty parking spots']),
-            mean_absolute_error(df['Empty parking spots'], yolov8n_df['Empty parking spots']),
-            mean_absolute_error(df['Empty parking spots'], yolov8s_df['Empty parking spots'])
+        'Empty parking spots Accuracy': [
+            (yolov5n_df['Empty parking spots'] == df['Empty parking spots']).mean(),
+            (yolov5s_df['Empty parking spots'] == df['Empty parking spots']).mean(),
+            (yolov8n_df['Empty parking spots'] == df['Empty parking spots']).mean(),
+            (yolov8s_df['Empty parking spots'] == df['Empty parking spots']).mean()
         ],
-        'Cars in transit or parked in non-parking spots MAE': [
-            mean_absolute_error(df['Cars in transit or parked in non-parking spots'], yolov5n_df['Cars in transit or parked in non-parking spots']),
-            mean_absolute_error(df['Cars in transit or parked in non-parking spots'], yolov5s_df['Cars in transit or parked in non-parking spots']),
-            mean_absolute_error(df['Cars in transit or parked in non-parking spots'], yolov8n_df['Cars in transit or parked in non-parking spots']),
-            mean_absolute_error(df['Cars in transit or parked in non-parking spots'], yolov8s_df['Cars in transit or parked in non-parking spots'])
+        'Cars in transit or parked in non-parking spots Accuracy': [
+            (yolov5n_df['Cars in transit or parked in non-parking spots'] == df['Cars in transit or parked in non-parking spots']).mean(),
+            (yolov5s_df['Cars in transit or parked in non-parking spots'] == df['Cars in transit or parked in non-parking spots']).mean(),
+            (yolov8n_df['Cars in transit or parked in non-parking spots'] == df['Cars in transit or parked in non-parking spots']).mean(),
+            (yolov8s_df['Cars in transit or parked in non-parking spots'] == df['Cars in transit or parked in non-parking spots']).mean()
         ],
     }
-    
+
     return pd.DataFrame.from_dict(results)
