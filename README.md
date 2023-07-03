@@ -127,10 +127,16 @@ To further improve our work, it is recommended to create a larger and more preci
 By investing in a more comprehensive and accurately labeled dataset, we can train a model that is tailored specifically to the ICT Unifesp parking lot, optimizing its performance and ensuring it meets the specific requirements of our study. With continued efforts to refine the dataset and fine-tune the model, we can strive for even better results and contribute to the advancement of parking spot detection and monitoring systems.
 
 ## Additional Information
-- [Paper](paper_url)
-- [YouTube Video](video_url)
+#### Note: The paper and video are in Brazilian Portuguese.
 
-Note: The paper and video are in Brazilian Portuguese.
+### <div align="center">[YouTube Video](url)</div>
+### <div align="center">[Paper](url) - Identificação de Veículos em Estacionamentos: Uma Abordagem Comparativa Entre Diferentes Versões do Modelo YOLO</div>
+
+<div align="center">
+    <a href="url">
+        <img width="30%" src="images/paper-preview.png">
+    </a>
+</div>
 
 ## License
 The **YOLO Parking Spot** project is licensed under the MIT License. Feel free to use and modify the code according to your needs.
