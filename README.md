@@ -131,18 +131,21 @@ By investing in a more comprehensive and accurately labeled dataset, we can trai
 ## Additional Information
 #### Note: The paper and video are in Brazilian Portuguese.
 
-### <div id="youtube-video" align="center">[YouTube Video](url)</div>
+### <div id="youtube-video" align="center">[YouTube Video](https://www.youtube.com/watch?v=XJYMB878Iag)</div>
+### <div align="center">Identificação de Veículos em Estacionamentos: Uma Abordagem Comparativa Entre Modelos YOLO</div>
 
 <div align="center">
-    <a href="url">
+    <a href="https://www.youtube.com/watch?v=XJYMB878Iag">
         <img width="30%" src="images/thumbnail.png">
     </a>
 </div>
+<br>
 
-### <div id="paper" align="center">[Paper](url) - Identificação de Veículos em Estacionamentos: Uma Abordagem Comparativa Entre Diferentes Versões do Modelo YOLO</div>
+### <div id="paper" align="center">[Paper](paper.pdf)</div>
+### <div align="center">Identificação de Veículos em Estacionamentos: Uma Abordagem Comparativa Entre Modelos YOLO</div>
 
 <div align="center">
-    <a href="url">
+    <a href="paper.pdf">
         <img width="30%" src="images/paper-preview.png">
     </a>
 </div>
