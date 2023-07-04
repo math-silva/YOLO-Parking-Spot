@@ -21,6 +21,8 @@ We documented our project in a research paper, providing detailed explanations o
 - [Results Comparison](#results-comparison)
 - [Conclusion](#conclusion)
 - [Additional Information](#additional-information)
+    - [YouTube Video](#youtube-video)
+    - [Paper](#paper)
 - [License](#license)
 
 ## Authors
@@ -129,8 +131,15 @@ By investing in a more comprehensive and accurately labeled dataset, we can trai
 ## Additional Information
 #### Note: The paper and video are in Brazilian Portuguese.
 
-### <div align="center">[YouTube Video](url)</div>
-### <div align="center">[Paper](url) - Identificação de Veículos em Estacionamentos: Uma Abordagem Comparativa Entre Diferentes Versões do Modelo YOLO</div>
+### <div id="youtube-video" align="center">[YouTube Video](url)</div>
+
+<div align="center">
+    <a href="url">
+        <img width="30%" src="images/thumbnail.png">
+    </a>
+</div>
+
+### <div id="paper" align="center">[Paper](url) - Identificação de Veículos em Estacionamentos: Uma Abordagem Comparativa Entre Diferentes Versões do Modelo YOLO</div>
 
 <div align="center">
     <a href="url">
