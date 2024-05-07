@@ -26,7 +26,7 @@ We documented our project in a research paper, providing detailed explanations o
 - [License](#license)
 
 ## Authors
-- [Matheus Silva](https://www.github.com/coding-math) | [LinkedIn](https://www.linkedin.com/in/matheussmsilva/)
+- [Matheus Silva](https://www.github.com/math-silva) | [LinkedIn](https://www.linkedin.com/in/matheussmsilva/)
 - [Marcos Lucas](https://www.github.com/lmarcosz) | [LinkedIn](https://www.linkedin.com/in/marcos-l-silva/)
   
 ## YOLO Introduction
